@@ -1,0 +1,51 @@
+version: '3.4'
+services:
+  mysql:
+    build: ./docker-build/mysql
+    # 本地访问端口 33060
+    ports:
+      - "33060:3306"
+    volumes:
+      - ./docker-build/mysql/data:/var/lib/mysql
+      - ./docker-build/mysql/my.cnf:/etc/my.cnf
+    entrypoint: ['docker-entrypoint.sh', '--default-authentication-plugin=mysql_native_password']
+    environment:
+      MYSQL_ROOT_PASSWORD: liangtongzhuo
+    networks:
+      - backend
+    restart: always
+    container_name: mysql
+  redis:
+    build: ./docker-build/redis
+    # 本地访问端口 63790
+    ports:
+      - "63790:6379"
+    volumes:
+      - ./docker-build/redis/redis.conf/:/usr/local/etc/redis.conf
+      - ./docker-build/redis/data:/usr/local/redis/data
+      - ./docker-build/redis/redis.log:/usr/local/redis/redis.log
+    restart: always      
+    networks:
+      - backend
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    environment:
+      # 账号
+      - RABBITMQ_DEFAULT_USER=rabbitmq 
+      # 密码
+      - RABBITMQ_DEFAULT_PASS=123456 
+    restart: always
+    ports:
+      # 15672为rabbitmq的web管理界面端口
+      - "15672:15672"
+      # 为rabbitmq的服务端口 
+      - "5672:5672" 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+      
+networks:
+  backend:
