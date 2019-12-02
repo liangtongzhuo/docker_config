@@ -10,6 +10,7 @@ services:
       - ./docker-build/mysql/my.cnf:/etc/my.cnf
     entrypoint: ['docker-entrypoint.sh', '--default-authentication-plugin=mysql_native_password']
     environment:
+      # 账号：root，密码：liangtongzhuo
       MYSQL_ROOT_PASSWORD: liangtongzhuo
     networks:
       - backend
